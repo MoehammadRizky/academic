@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+from odoo.exceptions import ValidationError
 import time
 
 
@@ -42,6 +43,30 @@ class session(models.Model):
         string="Taken Seat",
         required=False,
     )
+    
+    image_small = fields.Binary(string="Image Small", )
+    
+    state = fields.Selection(
+        string="State",
+        selection=[("draft", "Draft"), ("open", "Open"), ("done", "Done")],
+        required=True,
+        default='draft',  # Menambahkan default state
+        states={
+            'done': [('readonly', True)],  # Contoh penggunaan states
+        }
+    )
+
+    def action_open(self):
+        self.state = "open"
+
+
+    def action_done(self):
+        self.state = "done"
+
+
+    def action_draft(self):
+        self.state = "draft"
+
 
     @api.depends("attendee_ids", "seats")
     def _calc_taken_seats(self):
