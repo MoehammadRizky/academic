@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+from odoo.exceptions import ValidationError
 import time
 
 
@@ -43,6 +44,29 @@ class session(models.Model):
         required=False,
     )
 
+    image_small = fields.Binary(
+        string="Image Small",
+    )
+
+    state = fields.Selection(
+        string="State",
+        selection=[("draft", "Draft"), ("open", "Open"), ("done", "Done")],
+        required=True,
+        default="draft",  # Menambahkan default state
+        states={
+            "done": [("readonly", True)],  # Contoh penggunaan states
+        },
+    )
+
+    def action_open(self):
+        self.state = "open"
+
+    def action_done(self):
+        self.state = "done"
+
+    def action_draft(self):
+        self.state = "draft"
+
     @api.depends("attendee_ids", "seats")
     def _calc_taken_seats(self):
         for rec in self:
@@ -55,3 +79,24 @@ class session(models.Model):
         self.ensure_one()
         default = dict(default or {}, name=_("copied from %s") % self.name)
         return super(session, self).copy(default=default)
+
+    def open_wizard(self):
+        view = self.env.ref("academic_master.create_attendee_form_view")
+        wizard = self.env["academic.create.attendee.wizard"].create(
+            {
+                # "session_id": self.id,
+                "session_ids": [(4, id) for id in self.ids], 
+            }
+        )
+        return {
+            "name": _("Add attendee"),
+            "type": "ir.actions.act_window",
+            "view_type": "form",
+            "view_mode": "form",
+            "res_model": "academic.create.attendee.wizard",
+            "views": [(view.id, "form")],
+            "view_id": view.id,
+            "target": "new",
+            "res_id": wizard.id,
+            "context": self.env.context,
+        }

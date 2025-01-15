@@ -14,12 +14,14 @@ Create and manage students for your academy.
     "depends": ["base"],
     # always loaded
     "data": [
-        "views/menu.xml",
+        "security/groups.xml",
         "security/ir.model.access.csv",
+        "views/menu.xml",
         "views/course.xml",
         "views/session.xml",
         "views/attendee.xml",
         "views/partner.xml",
+        "wizard/create_attendee.xml",
     ],
     "images": ["static/images/banner.png", "static/description/icon.png"],
     "installable": True,

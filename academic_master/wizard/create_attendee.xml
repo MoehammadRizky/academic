@@ -1,0 +1,49 @@
+<odoo>
+    <data>
+        <record id="create_attendee_wizard_action" model="ir.actions.act_window">
+            <field name="name">Add attendee</field>
+            <field name="res_model">academic.create.attendee.wizard</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+        <menuitem name="Add Attendees" parent="academic_1" id="create_attendee_wizard_menu" sequence="40" action="create_attendee_wizard_action"/>
+
+
+        <record model="ir.ui.view" id="create_attendee_form_view">
+            <field name="name">academic.create.attendee.wizard.form</field>
+            <field name="model">academic.create.attendee.wizard</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Add attendee" version="7.0">
+                    <group>
+                        <field name="session_id"/>
+                        <field name="session_ids"/>
+                        <field name="partner_ids"/>
+                    </group>
+                    <footer>
+                        <button type="special" special="cancel" string="Cancel" icon="fa-times"/>
+                        <button type="object" name="action_add_attendee" string="Add attendees" icon="fa-check-circle" confirm="Yakin mau menambahkan semua attendees ini?" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+
+        <record model="ir.actions.server" id="open_wizard_action_server">
+            <field name="name">Add Attendees</field>
+            <field name="model_id" ref="academic_master.model_academic_session"/>
+            <field name="binding_model_id" ref="academic_master.model_academic_session"/>
+            <field name="binding_view_types">list,form</field>
+            <field name="state">code</field>
+            <field name="code">
+if records:
+    action = records.open_wizard()
+            </field>
+        </record>
+
+    </data>
+
+
+
+</odoo> 
